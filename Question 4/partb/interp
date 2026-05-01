@@ -1,0 +1,2 @@
+#!/bin/sh
+./echoall INTERPRETER_ARG $1 $2
