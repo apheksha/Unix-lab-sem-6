@@ -34,5 +34,4 @@ int main(int argc, char *argv[])
     fclose(fp2);
 
     return 0;
-}	return 0;
 }
