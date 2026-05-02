@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
-#include<sys/stat.h>
 #include<fcntl.h>
+#include<sys/types.h>
+#include<sys/stat.h>
 
 int main()
 {
@@ -19,12 +20,16 @@ int main()
 
     setsid();
 
+    pid = fork();
+    if(pid < 0) exit(1);
+    if(pid > 0) exit(0);
+
     umask(0);
     chdir("/");
 
-    close(0);
-    close(1);
-    close(2);
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
 
     open("/dev/null", O_RDONLY);
     open("/dev/null", O_WRONLY);
