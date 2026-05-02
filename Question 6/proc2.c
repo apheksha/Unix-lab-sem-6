@@ -1,71 +1,43 @@
 #include<stdio.h>
-#include<stdlib.h>
 #include<fcntl.h>
 #include<unistd.h>
 
-int main()
-{
-    int fd,n;
-    struct flock f;
-    char file[100], buf[51];
-    off_t size;
+int main() {
+	int fd,n;
+	char f1[100],b[51];
+	struct flock f;
+	off_t s;
+	printf("Enter file name: ");
+	scanf("%s",f1);
+	fd=open(f1,O_RDWR);
 
-    printf("Enter file name: ");
-    scanf("%s", file);
+	s=lseek(fd,0,SEEK_END);
 
-    fd = open(file, O_RDWR);
-    if(fd < 0)
-    {
-        perror("open");
-        return 1;
-    }
+	f.l_type=F_WRLCK;
+	f.l_whence=SEEK_SET;
+	f.l_start=s-100;
+	f.l_len=100;
 
-    size = lseek(fd, 0, SEEK_END);
-    if(size < 100)
-    {
-        printf("File too small\n");
-        return 1;
-    }
+	fcntl(fd,F_GETLK,&f);
+	if(f.l_type!=F_UNLCK) {
+		printf("Locked by PID: %d\n",f.l_pid);
+		return 0;
+	}
 
-    f.l_type = F_WRLCK;
-    f.l_whence = SEEK_SET;
-    f.l_start = size - 100;
-    f.l_len = 100;
+	f.l_type=F_WRLCK;
+	fcntl(fd,F_SETLK,&f);
 
-    if(fcntl(fd, F_GETLK, &f) == -1)
-    {
-        perror("fcntl");
-        return 1;
-    }
+	printf("Region locked. Press Enter to continue...\n");
+	getchar();
+	getchar();
 
-    if(f.l_type != F_UNLCK)
-    {
-        printf("Locked by PID: %d\n", f.l_pid);
-        close(fd);
-        return 0;
-    }
+	lseek(fd,s-50,SEEK_SET);
+	n=read(fd,b,50);
+	b[n]='\0';
+	printf("%s\n",b);
 
-    f.l_type = F_WRLCK;
-    if(fcntl(fd, F_SETLK, &f) == -1)
-    {
-        perror("lock");
-        return 1;
-    }
+	f.l_type=F_UNLCK;
+	fcntl(fd,F_SETLK,&f);
 
-    printf("Region locked. Press Enter to continue...\n");
-    getchar(); getchar();
-
-    lseek(fd, size - 50, SEEK_SET);
-    n = read(fd, buf, 50);
-    buf[n] = '\0';
-
-    printf("%s\n", buf);
-
-    f.l_type = F_UNLCK;
-    fcntl(fd, F_SETLK, &f);
-
-    printf("Region unlocked\n");
-
-    close(fd);
-    return 0;
+	printf("Region unlocked\n");
 }
