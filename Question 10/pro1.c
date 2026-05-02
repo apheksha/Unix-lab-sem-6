@@ -1,30 +1,37 @@
 #include<stdio.h>
-#include<unistd.h>
-#include<sys/types.h>
-#include<fcntl.h>
 #include<stdlib.h>
+#include<unistd.h>
+#include<sys/stat.h>
+#include<fcntl.h>
 
 int main()
 {
-	pid_t pid;
-	pid = fork();
+    pid_t pid;
 
-	if(pid < 0)
-	{
-		printf("Fork failed");
-		exit(1);
-	}
-	if(pid > 0)
-	{
-		exit(0);
-	}
+    pid = fork();
+    if(pid < 0) exit(1);
 
-	setsid();
-	printf("Daemon process started with pid : %d\n", getpid());
+    if(pid > 0)
+    {
+        printf("Daemon PID: %d\n", pid);   // print from parent
+        exit(0);
+    }
 
-	while(1)
-	{
-		sleep(5);
-	}
-	return 0;
+    setsid();
+
+    umask(0);
+    chdir("/");
+
+    close(0);
+    close(1);
+    close(2);
+
+    open("/dev/null", O_RDONLY);
+    open("/dev/null", O_WRONLY);
+    open("/dev/null", O_RDWR);
+
+    while(1)
+        sleep(5);
+
+    return 0;
 }
