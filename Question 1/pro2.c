@@ -14,7 +14,7 @@ int main()
 	scanf("%s",file);
 	fd = open(file, O_RDONLY);
 
-	if(pid == -1)
+	if(fd < 0)
 	{
 		perror("open");
 		return 1;
