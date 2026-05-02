@@ -1,18 +1,30 @@
 #include<stdio.h>
+#include<stdlib.h>
 #include<unistd.h>
+#include<sys/wait.h>
+
+extern char **environ;
 
 int main()
 {
-	int pid;
+    pid_t pid;
 
-	pid = fork();
-	if(pid  == 0)
-	{
-		execl("./echoall", "echoall", "myarg1","MYARG1",NULL);
-	}
-	else{
-		sleep(1);
-		 execl("./echoall","echoall","only 1 arg", NULL);
-	}
-	return 0;
+    pid = fork();
+
+    if(pid == 0)
+    {
+        char *env[] = {"USER=Student", "CITY=India", NULL};
+        execle("./echoall", "echoall", "child", NULL, env);
+        perror("execle");
+        exit(1);
+    }
+    else
+    {
+        wait(NULL);
+
+        execve("./echoall", (char*[]){"echoall","parent",NULL}, environ);
+        perror("execve");
+    }
+
+    return 0;
 }
