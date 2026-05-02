@@ -1,2 +1,4 @@
-#!/bin/sh
-./echoall INTERPRETER_ARG $1 $2
+printf '#!%s/echoall INTERPRETER_ARG\n' "$PWD" > interp
+chmod +x interp
+
+//commands to be excuted dont create this file
