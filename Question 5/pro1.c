@@ -1,10 +1,11 @@
 #include<stdio.h>
 #include<sys/stat.h>
 #include<utime.h>
+#include<stdlib.h>
 
 int main()
 {
-    char file1[20], file2[20];
+    char file1[100], file2[100];
     struct stat s;
     struct utimbuf t;
 
@@ -14,12 +15,20 @@ int main()
     printf("Enter destination file: ");
     scanf("%s", file2);
 
-    stat(file1, &s);
+    if(stat(file1, &s) == -1)
+    {
+        perror("stat");
+        return 1;
+    }
 
     t.actime = s.st_atime;
     t.modtime = s.st_mtime;
 
-    utime(file2, &t);
+    if(utime(file2, &t) == -1)
+    {
+        perror("utime");
+        return 1;
+    }
 
     printf("Time copied successfully\n");
 
