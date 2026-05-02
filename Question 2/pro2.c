@@ -2,7 +2,6 @@
 #include<stdlib.h>
 #include<unistd.h>
 #include<sys/wait.h>
-#include<sys/types.h>
 
 int my_sys(const char *cm)
 {
@@ -11,24 +10,27 @@ int my_sys(const char *cm)
 
     pid_t pid = fork();
 
-    if(pid == -1)
+    if(pid < 0)
     {
-        printf("Fork Error\n");
+        perror("fork");
         return -1;
     }
     else if(pid == 0)
     {
         execl("/bin/sh", "sh", "-c", cm, (char *)NULL);
 
-        printf("Exec Error\n");
-        exit(1);
+        perror("execl");
+        _exit(127);
     }
     else
     {
         int st;
 
-        if(waitpid(pid, &st, 0) == -1)
+        if(waitpid(pid, &st, 0) < 0)
+        {
+            perror("waitpid");
             return -1;
+        }
 
         if(WIFEXITED(st))
             return WEXITSTATUS(st);
