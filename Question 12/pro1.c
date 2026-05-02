@@ -1,41 +1,24 @@
-#include<stdio.h>
-#include<unistd.h>
-#include<stdlib.h>
-#include<sys/wait.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/wait.h>
 
-int main()
-{
-    int pid1, pid2;
+int main(void) {
+    pid_t pid = fork();
+    if (pid < 0) { perror("fork"); return 1; }
 
-    
-    pid1 = fork();
-
-    if(pid1 == 0)
-    {
-        printf("Child 1 pid: %d\n", getpid());
-        exit(0);   
+    if (pid == 0) {
+        printf("Child exiting. PID: %d\n", getpid());
+        exit(0);
     }
-    else
-    {
-        sleep(2);  
 
-        printf("terminated child's pid: %d\n", pid1);
+    printf("Parent sleeping 10s. Child (PID %d) is now zombie.\n", pid);
+    printf("Run: ps -l | grep Z\n");
 
-        
-        pid2 = fork();
+    sleep(10);   // Zombie exists here
 
-        if(pid2 == 0)
-        {
-            printf("Child 2 pid is: %d\n", getpid());
-            printf("second child, parent pid = %d\n", getppid());
-            exit(0);
-        }
-        else
-        {
-            wait(NULL);   
-            wait(NULL);   
-        }
-    }
+    wait(NULL);  // Solution
+    printf("Zombie removed using wait()\n");
 
     return 0;
 }
