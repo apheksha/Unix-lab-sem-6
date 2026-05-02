@@ -23,12 +23,6 @@ int main()
     }
 
     r = read(fd, buf, n);
-    if(r < 0)
-    {
-        perror("read");
-        close(fd);
-        return 1;
-    }
 
     buf[r] = '\0';
 
