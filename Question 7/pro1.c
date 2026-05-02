@@ -1,38 +1,36 @@
 #include<stdio.h>
 #include<setjmp.h>
+#include<stdlib.h>
 
-jmp_buf buf;
-int gv = 95;
-static int sv = 99;
+static jmp_buf buf;
+static int gv;
 
-void f1()
-{
-    int av = 96;
-    register int rv = 97;
-    volatile int vv = 98;
-
-    printf("Before setjmp:\n");
-    printf("gv=%d av=%d rv=%d vv=%d sv=%d\n", gv, av, rv, vv, sv);
-
-    if(setjmp(buf) == 0)
-    {
-        gv = 100;
-        av = 200;
-        rv = 300;
-        vv = 400;
-        sv = 500;
-
-        longjmp(buf, 1);
-    }
-    else
-    {
-        printf("After longjmp:\n");
-        printf("gv=%d av=%d rv=%d vv=%d sv=%d\n", gv, av, rv, vv, sv);
-    }
+void f2(void){
+    longjmp(buf,1);
 }
 
-int main()
-{
-    f1();
+void f1(int av,int rv,int vv,int sv){
+    printf("In f1:\n");
+    printf("gv=%d av=%d rv=%d vv=%d sv=%d\n",gv,av,rv,vv,sv);
+    f2();
+}
+
+int main(){
+    int av;
+    register int rv;
+    volatile int vv;
+    static int sv;
+
+    gv=1; av=2; rv=3; vv=4; sv=5;
+
+    if(setjmp(buf)!=0){
+        printf("After longjmp:\n");
+        printf("gv=%d av=%d rv=%d vv=%d sv=%d\n",gv,av,rv,vv,sv);
+        return 0;
+    }
+
+    gv=95; av=96; rv=97; vv=98; sv=99;
+
+    f1(av,rv,vv,sv);
     return 0;
 }
