@@ -27,14 +27,6 @@ int main()
     umask(0);
     chdir("/");
 
-    close(STDIN_FILENO);
-    close(STDOUT_FILENO);
-    close(STDERR_FILENO);
-
-    open("/dev/null", O_RDONLY);
-    open("/dev/null", O_WRONLY);
-    open("/dev/null", O_RDWR);
-
     while(1)
         sleep(5);
 
