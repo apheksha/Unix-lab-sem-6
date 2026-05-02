@@ -5,19 +5,28 @@
 
 int main()
 {
-	mode_t oldmask;
+    mode_t oldmask;
 
-	oldmask = umask(002);
-	printf("Oldmask:%03o, New mask : 022\n", oldmask);
+    oldmask = umask(002);
+    printf("Old mask: %03o\n", oldmask);
 
-	int fd = creat("t1.txt",0777);
+    int fd = creat("t1.txt",0777);
 
-	if(fd < 0)
-	{
-		printf("Error creating file\n");
-	       	return 1;
-	}
-	chmod("t1.txt",0644);
-	printf("Changing permission of t1.txt to 0644\n");
-	 return 0;
+    if(fd < 0)
+    {
+        perror("creat");
+        return 1;
+    }
+
+    printf("File created\n");
+
+    if(chmod("t1.txt",0644) < 0)
+    {
+        perror("chmod");
+        return 1;
+    }
+
+    printf("Permissions changed to 0644\n");
+
+    return 0;
 }
