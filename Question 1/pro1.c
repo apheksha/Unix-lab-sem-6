@@ -19,22 +19,13 @@ int main(){
     }
 
     size = lseek(fd, 0, SEEK_END);
-    if(size < 0){
-        perror("lseek");
-        close(fd);
-        return 1;
-    }
 
     printf("Reverse Content:\n");
 
     for(i = size - 1; i >= 0; i--){
         lseek(fd, i, SEEK_SET);
-        if(read(fd, &ch, 1) != 1){
-            perror("read");
-            close(fd);
-            return 1;
-        }
-        printf("%c", ch);
+		read(fd, &ch, 1);
+		printf("%c", ch);
     }
 
     printf("\n");
