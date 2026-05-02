@@ -5,16 +5,19 @@
 
 int main()
 {
-	int pid; 
-	pid = fork();
+    pid_t pid = fork();
 
-	if(pid == 0)
-	{
-		execl("./interp","interp","CHILD_ARG1","CHILD_ARG2",NULL);
-	}
-	else{
-		wait(NULL);
-		printf("Parent process complete");
-	}
-	return 0;
+    if(pid == 0)
+    {
+        execl("./interp", "interp", "CHILD_ARG1", "CHILD_ARG2", NULL);
+        perror("execl");
+        exit(1);
+    }
+    else
+    {
+        wait(NULL);
+        printf("Parent process complete\n");
+    }
+
+    return 0;
 }
