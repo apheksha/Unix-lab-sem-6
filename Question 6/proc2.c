@@ -4,7 +4,7 @@
 
 int main() {
 	int fd,n;
-	char f1[100],b[51];
+	char f1[100],buf[51];
 	struct flock f;
 	off_t s;
 	printf("Enter file name: ");
@@ -32,9 +32,9 @@ int main() {
 	getchar();
 
 	lseek(fd,s-50,SEEK_SET);
-	n=read(fd,b,50);
-	b[n]='\0';
-	printf("%s\n",b);
+	n=read(fd,buf,50);
+	buf[n]='\0';
+	printf("%s\n",buf);
 
 	f.l_type=F_UNLCK;
 	fcntl(fd,F_SETLK,&f);
