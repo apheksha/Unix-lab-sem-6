@@ -15,14 +15,18 @@ int main()
     printf("Enter n: ");
     scanf("%d", &n);
 
-    fd = open(file, O_RDWR);
-    if(fd < 0)
-    {
+    fd = open(file, O_RDWR | O_CREAT, 0644);
+    if(fd < 0){
         perror("open");
         return 1;
     }
 
     r = read(fd, buf, n);
+    if(r < 0){
+        perror("read");
+        close(fd);
+        return 1;
+    }
 
     buf[r] = '\0';
 
@@ -30,7 +34,7 @@ int main()
 
     dup2(fd, 1);   
 
-    write(1, buf, strlen(buf));
+    printf("%s", buf);   
 
     close(fd);
     return 0;
