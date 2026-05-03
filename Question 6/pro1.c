@@ -15,7 +15,7 @@ int main()
     printf("Enter n: ");
     scanf("%d", &n);
 
-    fd = open(file, O_RDWR | O_CREAT, 0644);
+    fd = open(file, O_RDWR);
     if(fd < 0){
         perror("open");
         return 1;
