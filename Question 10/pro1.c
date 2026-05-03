@@ -26,7 +26,7 @@ int main()
 
     umask(0);
     chdir("/");
-
+    close(0); close(1); close(2); 
     while(1)
         sleep(5);
 
