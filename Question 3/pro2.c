@@ -7,16 +7,16 @@
 
 int main(int argc, char *argv[])
 {
-    DIR *dp;
-    struct dirent *d;
-    struct stat m;
+    DIR *d;
+    struct dirent *p;
+    struct stat s;
     char *dir;
     char path[200];
 
     dir = (argc > 1) ? argv[1] : ".";
 
-    dp = opendir(dir);
-    if(dp == NULL)
+    d = opendir(dir);
+    if(d == NULL)
     {
         perror("opendir");
         return 1;
@@ -24,25 +24,25 @@ int main(int argc, char *argv[])
 
     printf("Inode\tMode\tUID\tGID\tAccess Time\t\tFile Name\n");
 
-    while((d = readdir(dp)) != NULL)
+    while((p = readdir(d)) != NULL)
     {
-        sprintf(path, "%s/%s", dir, d->d_name);
+        sprintf(path, "%s/%s", dir, p->d_name);
 
-        if(stat(path, &m) == -1)
+        if(stat(path, &s) == -1)
         {
             perror("stat");
             continue;
         }
 
         printf("%ld\t%o\t%d\t%d\t%s\t%s\n",
-               (long)m.st_ino,
-               m.st_mode & 0777,
-               (int)m.st_uid,
-               (int)m.st_gid,
-               ctime(&m.st_atime),
-               d->d_name);
+               (long)s.st_ino,
+               s.st_mode & 0777,
+               (int)s.st_uid,
+               (int)s.st_gid,
+               ctime(&s.st_atime),
+               p->d_name);
     }
 
-    closedir(dp);
+    closedir(d);
     return 0;
 }
