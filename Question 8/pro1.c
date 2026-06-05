@@ -1,3 +1,4 @@
+//Write a C program that takes the file name as an argument and prints the type of the given file.
 #include<stdio.h>
 #include<sys/stat.h>
 
