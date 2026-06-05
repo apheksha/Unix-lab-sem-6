@@ -1,48 +1,46 @@
+// Write a C program to implement ls -li command which lists the files in a specified directory. Your program should print 5 attributes of files.
+
 #include<stdio.h>
 #include<dirent.h>
 #include<sys/stat.h>
-#include<time.h>
-#include<string.h>
-#include<stdlib.h>
 
-int main(int argc, char *argv[])
+int main(int argc,char *argv[])
 {
-    DIR *d;
-    struct dirent *p;
-    struct stat s;
-    char *dir;
-    char path[200];
+    DIR *dir;
+    struct dirent *entry;
+    struct stat st;
+    char buf[500];
+    char *path;
 
-    dir = (argc > 1) ? argv[1] : ".";
+    path=(argc==2)?argv[1]:".";
 
-    d = opendir(dir);
-    if(d == NULL)
+    dir=opendir(path);
+
+    if(dir==NULL)
     {
         perror("opendir");
         return 1;
     }
 
-    printf("Inode\tMode\tUID\tGID\tAccess Time\t\tFile Name\n");
+    printf("INODE\tPERM\tLINKS\tUID\tGID\tFILE\n");
 
-    while((p = readdir(d)) != NULL)
+    while((entry=readdir(dir))!=NULL)
     {
-        sprintf(path, "%s/%s", dir, p->d_name);
+        sprintf(buf,"%s/%s",path,entry->d_name);
 
-        if(stat(path, &s) == -1)
-        {
-            perror("stat");
+        if(stat(buf,&st)==-1)
             continue;
-        }
 
-        printf("%ld\t%o\t%d\t%d\t%s\t%s\n",
-               (long)s.st_ino,
-               s.st_mode & 0777,
-               (int)s.st_uid,
-               (int)s.st_gid,
-               ctime(&s.st_atime),
-               p->d_name);
+        printf("%ld\t%o\t%ld\t%d\t%d\t%s\n",
+               (long)st.st_ino,
+               st.st_mode & 0777,
+               (long)st.st_nlink,
+               st.st_uid,
+               st.st_gid,
+               entry->d_name);
     }
 
-    closedir(d);
+    closedir(dir);
+
     return 0;
 }
