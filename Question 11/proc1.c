@@ -1,23 +1,34 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
+// Write a program to differentiate between dup and dup2 functions.
 
-int main(void) {
-    int fd, fd_dup, fd_dup2;
+#include<stdio.h>
+#include<unistd.h>
+#include<fcntl.h>
 
-    fd = open("dup_output.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
-    if (fd < 0) { perror("open"); return 1; }
+int main()
+{
+    int fd;
+    int fd_dup;
+    int fd_dup2;
 
-    fd_dup = dup(fd);
-    printf("Original fd = %d\n", fd);
-    printf("dup fd      = %d (lowest available)\n", fd_dup);
+    fd=open("test.txt",O_CREAT|O_WRONLY|O_TRUNC,0644);
 
-    fd_dup2 = dup2(fd, 10);
-    printf("dup2 fd     = %d (fixed descriptor 10)\n", fd_dup2);
+    if(fd<0)
+    {
+        perror("open");
+        return 1;
+    }
 
-    write(fd,      "Written using original fd\n", 26);
-    write(fd_dup,  "Written using dup fd\n", 21);
-    write(fd_dup2, "Written using dup2 fd\n", 22);
+    fd_dup=dup(fd);
+
+    fd_dup2=dup2(fd,10);
+
+    printf("Original FD : %d\n",fd);
+    printf("dup FD      : %d\n",fd_dup);
+    printf("dup2 FD     : %d\n",fd_dup2);
+
+    write(fd,"Using Original FD\n",18);
+    write(fd_dup,"Using dup FD\n",13);
+    write(fd_dup2,"Using dup2 FD\n",14);
 
     close(fd);
     close(fd_dup);
