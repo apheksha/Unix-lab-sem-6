@@ -1,3 +1,5 @@
+// Write a C program to demonstrate the usage of umask and chmod functions.
+
 #include<stdio.h>
 #include<unistd.h>
 #include<sys/stat.h>
@@ -5,28 +7,35 @@
 
 int main()
 {
-    mode_t oldmask;
+    int fd;
+    mode_t mask;
+    struct stat st;
 
-    oldmask = umask(002);
-    printf("Old mask: %03o\n", oldmask);
+    mask=umask(002);
 
-    int fd = creat("t1.txt",0777);
+    printf("Old Umask : %03o\n",mask);
 
-    if(fd < 0)
+    fd=creat("test.txt",0777);
+
+    if(fd<0)
     {
         perror("creat");
         return 1;
     }
 
-    printf("File created\n");
+    close(fd);
 
-    if(chmod("t1.txt",0644) < 0)
+    stat("test.txt",&st);
+    printf("Before chmod : %o\n",st.st_mode & 0777);
+
+    if(chmod("test.txt",0644)==-1)
     {
         perror("chmod");
         return 1;
     }
 
-    printf("Permissions changed to 0644\n");
+    stat("test.txt",&st);
+    printf("After chmod : %o\n",st.st_mode & 0777);
 
     return 0;
 }
