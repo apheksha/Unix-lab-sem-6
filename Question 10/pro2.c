@@ -1,38 +1,50 @@
-#include<stdio.h>
-#include<unistd.h>
-#include<stdlib.h>
-#include<sys/wait.h>
+// Demonstrate the working of wait() and waitpid() system calls.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 int main()
 {
-    pid_t p1, p2;
+    pid_t pid1, pid2;
     int status;
 
-    p1 = fork();
+    pid1 = fork();
 
-    if(p1 == 0)
+    if(pid1 == 0)
     {
-        printf("Child 1 PID: %d\n", getpid());
+        printf("Child 1 PID : %d\n", getpid());
         sleep(2);
         exit(1);
     }
 
-    p2 = fork();
+    pid2 = fork();
 
-    if(p2 == 0)
+    if(pid2 == 0)
     {
-        printf("Child 2 PID: %d\n", getpid());
+        printf("Child 2 PID : %d\n", getpid());
         sleep(1);
         exit(2);
     }
 
-    printf("Parent PID: %d\n", getpid());
+    printf("Parent PID : %d\n", getpid());
 
-    waitpid(p1, &status, 0);
-    printf("waitpid: Child 1 finished\n");
+    waitpid(pid1, &status, 0);
+
+    if(WIFEXITED(status))
+    {
+        printf("waitpid collected Child 1, Exit Status = %d\n",
+               WEXITSTATUS(status));
+    }
 
     wait(&status);
-    printf("wait: Remaining child finished\n");
+
+    if(WIFEXITED(status))
+    {
+        printf("wait collected remaining Child, Exit Status = %d\n",
+               WEXITSTATUS(status));
+    }
 
     return 0;
 }
