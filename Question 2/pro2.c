@@ -1,56 +1,44 @@
+// Write a C program to simulate system function.
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
 #include<sys/wait.h>
 
-int my_sys(const char *cm)
+int my_system(const char *cmd)
 {
-    if(cm == NULL)
-        return -1;
+    pid_t pid;
+    int status;
 
-    pid_t pid = fork();
+    pid=fork();
 
-    if(pid < 0)
+    if(pid<0)
     {
         perror("fork");
         return -1;
     }
-    else if(pid == 0)
-    {
-        execl("/bin/sh", "sh", "-c", cm, (char *)NULL);
 
+    if(pid==0)
+    {
+        execl("/bin/sh","sh","-c",cmd,(char *)NULL);
         perror("execl");
-        _exit(127);
+        exit(1);
     }
-    else
-    {
-        int st;
 
-        if(waitpid(pid, &st, 0) < 0)
-        {
-            perror("waitpid");
-            return -1;
-        }
+    waitpid(pid,&status,0);
 
-        if(WIFEXITED(st))
-            return WEXITSTATUS(st);
-        else
-            return -1;
-    }
+    return status;
 }
 
-int main()
+int main(int argc,char *argv[])
 {
-    int res;
+    if(argc!=2)
+    {
+        printf("Usage: %s \"command\"\n",argv[0]);
+        return 1;
+    }
 
-    printf("Executing ls -li\n");
-
-    res = my_sys("ls -li");
-
-    if(res == -1)
-        printf("Error\n");
-    else
-        printf("Exited with status %d\n", res);
+    my_system(argv[1]);
 
     return 0;
 }
