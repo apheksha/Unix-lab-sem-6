@@ -1,50 +1,51 @@
+// Write a C program to remove empty files from the given directory.
+
 #include<stdio.h>
 #include<dirent.h>
-#include<unistd.h>
 #include<string.h>
-#include<fcntl.h>
-#include<stdlib.h>
+#include<sys/stat.h>
+#include<unistd.h>
 
-int main(int argc,char *argv[]){
-    DIR *d;
-    struct dirent *p;
-    char path[100];
-    int fd;
-    off_t size;
+int main(int argc,char *argv[])
+{
+    DIR *dir;
+    struct dirent *entry;
+    struct stat st;
+    char buf[500];
 
-    if(argc != 2){
-        printf("Usage: %s directory\n", argv[0]);
+    if(argc!=2)
+    {
+        printf("Usage: %s <directory>\n",argv[0]);
         return 1;
     }
 
-    d = opendir(argv[1]);
-    if(d == NULL){
+    dir=opendir(argv[1]);
+
+    if(dir==NULL)
+    {
         perror("opendir");
         return 1;
     }
 
-    while((p = readdir(d)) != NULL){
-        if(strcmp(p->d_name,".") == 0 || strcmp(p->d_name,"..") == 0)
+    while((entry=readdir(dir))!=NULL)
+    {
+        if(strcmp(entry->d_name,".")==0 ||
+           strcmp(entry->d_name,"..")==0)
             continue;
 
-        sprintf(path,"%s/%s",argv[1],p->d_name);
+        sprintf(buf,"%s/%s",argv[1],entry->d_name);
 
-        fd = open(path,O_RDONLY);
-        if(fd < 0)
+        if(stat(buf,&st)==-1)
             continue;
 
-        size = lseek(fd,0,SEEK_END);
-
-        if(size == 0){
-            if(unlink(path) == 0)
-                printf("removed empty :%s\n",path);
-            else
-                perror("unlink");
+        if(S_ISREG(st.st_mode) && st.st_size==0)
+        {
+            if(unlink(buf)==0)
+                printf("Removed : %s\n",buf);
         }
-
-        close(fd);
     }
 
-    closedir(d);
+    closedir(dir);
+
     return 0;
 }
