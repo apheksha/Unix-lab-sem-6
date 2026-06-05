@@ -1,3 +1,4 @@
+//Write a C program to display various details of a file using stat structure (At least 5 fields).
 #include<stdio.h>
 #include<sys/stat.h>
 #include<time.h>
