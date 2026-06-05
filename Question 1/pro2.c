@@ -4,42 +4,54 @@
 #include<fcntl.h>
 #include<sys/wait.h>
 
-int main()
+int main(int argc,char *argv[])
 {
-	int fd;
-	pid_t pid;
-	char file[20], buffer[10];
-	
-	printf("Enter the filename:");
-	scanf("%s",file);
-	fd = open(file, O_RDONLY);
+    int fd;
+    pid_t pid;
+    char buf[6];
 
-	if(fd < 0)
-	{
-		perror("open");
-		return 1;
-	}
+    if(argc!=2)
+    {
+        printf("Usage: %s <filename>\n",argv[0]);
+        return 1;
+    }
 
-	pid = fork();
+    fd=open(argv[1],O_RDONLY);
 
-	if(pid == -1)
-	{
-		perror("fork");
-		return 1;
-	}
-	else if(pid == 0)
-	{
-		read(fd, buffer, 5);
-		buffer[5]  = '\0';
+    if(fd<0)
+    {
+        perror("open");
+        return 1;
+    }
 
-		printf("Child process: %s\n", buffer);
-	}
-	else{
-		wait(NULL);
-		read(fd,buffer,5);
-		buffer[5] = '\0';
-		printf("Parent process: %s\n", buffer);
-	}
-	close(fd);
-	return 0;
+    pid=fork();
+
+    if(pid<0)
+    {
+        perror("fork");
+        return 1;
+    }
+
+    if(pid==0)
+    {
+        read(fd,buf,5);
+        buf[5]='\0';
+
+        printf("Child Read : %s\n",buf);
+        printf("Child Offset : %ld\n",(long)lseek(fd,0,SEEK_CUR));
+    }
+    else
+    {
+        wait(NULL);
+
+        read(fd,buf,5);
+        buf[5]='\0';
+
+        printf("Parent Read : %s\n",buf);
+        printf("Parent Offset : %ld\n",(long)lseek(fd,0,SEEK_CUR));
+    }
+
+    close(fd);
+
+    return 0;
 }
