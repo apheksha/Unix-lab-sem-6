@@ -1,36 +1,52 @@
+// Write a C program to illustrate the effect of setjmp and longjmp functions on register and volatile variables.
+
 #include<stdio.h>
 #include<setjmp.h>
-#include<stdlib.h>
 
-static jmp_buf buf;
-static int gv;
+jmp_buf buf;
 
-void f2(void){
+int global_var;
+
+void jump_function()
+{
     longjmp(buf,1);
 }
 
-void f1(int av,int rv,int vv,int sv){
-    printf("In f1:\n");
-    printf("gv=%d av=%d rv=%d vv=%d sv=%d\n",gv,av,rv,vv,sv);
-    f2();
+void display(int auto_var,int reg_var,int vol_var,int static_var)
+{
+    printf("Inside Function:\n");
+    printf("%d %d %d %d %d\n",global_var,auto_var,reg_var,vol_var,static_var);
+
+    jump_function();
 }
 
-int main(){
-    int av;
-    register int rv;
-    volatile int vv;
-    static int sv;
+int main()
+{
+    int auto_var;
+    register int reg_var;
+    volatile int vol_var;
+    static int static_var;
 
-    gv=1; av=2; rv=3; vv=4; sv=5;
+    global_var=1;
+    auto_var=2;
+    reg_var=3;
+    vol_var=4;
+    static_var=5;
 
-    if(setjmp(buf)!=0){
+    if(setjmp(buf)!=0)
+    {
         printf("After longjmp:\n");
-        printf("gv=%d av=%d rv=%d vv=%d sv=%d\n",gv,av,rv,vv,sv);
+        printf("%d %d %d %d %d\n",global_var,auto_var,reg_var,vol_var,static_var);
         return 0;
     }
 
-    gv=95; av=96; rv=97; vv=98; sv=99;
+    global_var=95;
+    auto_var=96;
+    reg_var=97;
+    vol_var=98;
+    static_var=99;
 
-    f1(av,rv,vv,sv);
+    display(auto_var,reg_var,vol_var,static_var);
+
     return 0;
 }
