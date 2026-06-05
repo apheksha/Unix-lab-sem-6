@@ -2,28 +2,30 @@
 #include<sys/stat.h>
 #include<time.h>
 
-int main()
+int main(int argc,char *argv[])
 {
-	struct stat s;
-	char file[20];
+    struct stat s;
 
-	printf("Enter the filename:");
-	scanf("%s",file);
+    if(argc!=2)
+    {
+        printf("Usage: %s <filename>\n",argv[0]);
+        return 1;
+    }
 
-	if(stat(file, &s) == -1)
-	{
-		printf("File not found");
-		return 0;
-	}
+    if(stat(argv[1],&s)==-1)
+    {
+        perror("stat");
+        return 1;
+    }
 
-	printf("\nFile Name         :  %s\n", file);
-	printf("File Size         : %ld bytes\n", (long)s.st_size);
-	printf("Inode number : %ld\n", (long)s.st_ino);
-	printf("Permissions       : %o\n" , s.st_mode & 0777);
-	printf("Number of links   : %ld\n", (long)s.st_nlink);
-	printf("Owner UID         : %d\n", s.st_uid);
-	printf("Owner GID         : %d\n", s.st_gid);
-	printf("Last Access Time  : %s",ctime(&s.st_atime));
+    printf("File Name          : %s\n",argv[1]);
+    printf("File Size          : %ld bytes\n",(long)s.st_size);
+    printf("Inode Number       : %ld\n",(long)s.st_ino);
+    printf("Permissions        : %o\n",s.st_mode & 0777);
+    printf("Link Count         : %ld\n",(long)s.st_nlink);
+    printf("Owner UID          : %d\n",s.st_uid);
+    printf("Owner GID          : %d\n",s.st_gid);
+    printf("Last Access Time   : %s",ctime(&s.st_atime));
 
-	return 0;
+    return 0;
 }
