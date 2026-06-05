@@ -1,36 +1,51 @@
+// Write a program to read n characters from a file and append them back to the same file using dup2 function.
+
 #include<stdio.h>
 #include<unistd.h>
 #include<fcntl.h>
 #include<string.h>
-#include<stdlib.h>
+#include <stdlib.h>
 
-int main()
+int main(int argc,char *argv[])
 {
-    char file[100], buf[100];
-    int fd, n, r;
+    int fd;
+    int n;
+    int count;
+    char buf[100];
 
-    printf("Enter the filename: ");
-    scanf("%s", file);
+    if(argc!=3)
+    {
+        printf("Usage: %s <filename> <n>\n",argv[0]);
+        return 1;
+    }
 
-    printf("Enter n: ");
-    scanf("%d", &n);
+    fd=open(argv[1],O_RDWR);
 
-    fd = open(file, O_RDWR);
-    if(fd < 0){
+    if(fd<0)
+    {
         perror("open");
         return 1;
     }
 
-    r = read(fd, buf, n);
+    n=atoi(argv[2]);
 
-    buf[r] = '\0';
+    count=read(fd,buf,n);
 
-    lseek(fd, 0, SEEK_END);
+    if(count<0)
+    {
+        perror("read");
+        return 1;
+    }
 
-    dup2(fd, 1);   
+    buf[count]='\0';
 
-    printf("%s", buf);   
+    lseek(fd,0,SEEK_END);
+
+    dup2(fd,1);
+
+    write(1,buf,strlen(buf));
 
     close(fd);
+
     return 0;
 }
