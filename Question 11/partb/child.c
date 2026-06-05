@@ -1,21 +1,22 @@
+// Child program to add two numbers passed as command line arguments.
+
 #include<stdio.h>
 #include<stdlib.h>
 
-int main(int argc, char *argv[])
+int main(int argc,char *argv[])
 {
-    int a, b, sum;
+    int a,b;
 
-    if(argc != 3)
+    if(argc!=3)
     {
-        printf("Usage: %s num1 num2\n", argv[0]);
+        printf("Usage: %s <num1> <num2>\n",argv[0]);
         return 1;
     }
 
-    a = atoi(argv[1]);
-    b = atoi(argv[2]);
+    a=atoi(argv[1]);
+    b=atoi(argv[2]);
 
-    sum = a + b;
-    printf("Sum is: %d\n", sum);
+    printf("Sum = %d\n",a+b);
 
     return 0;
 }
