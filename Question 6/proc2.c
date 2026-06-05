@@ -1,3 +1,5 @@
+// Consider the last 100 bytes as a region. Write a C program to check whether the region is locked or not. If the region is locked, print pid of the process which has locked. If the region is not locked, lock the region with an exclusive lock, read the last 50 bytes and unlock the region.
+
 #include<stdio.h>
 #include<fcntl.h>
 #include<unistd.h>
