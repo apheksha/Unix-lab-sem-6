@@ -23,12 +23,7 @@ int main()
 
     if(pid==0)
     {
-        execl("./interp",
-              "interp",
-              "CHILD_ARG1",
-              "CHILD_ARG2",
-              NULL);
-
+        execl("./interp","interp","CHILD_ARG1","CHILD_ARG2",NULL);
         perror("execl");
         exit(1);
     }
