@@ -43,7 +43,7 @@ int main(int argc,char *argv[])
 
     dup2(fd,1);
 
-    write(1,buf,strlen(buf));
+    write(1,buf,count);
 
     close(fd);
 
